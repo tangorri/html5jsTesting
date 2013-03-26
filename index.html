@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0px;
+        padding: 0px;
+      }
+      #myCanvas {
+        border: 1px solid #9C9898;
+      }
+    </style>
+  </head>
+  <body>
+      <canvas id="myCanvas" width="578" height="200"></canvas>
+    <label>FrameRate : </label>
+    <input type="number" name="frameTarget" min="0" max="60" value="15" oninput="change">
+    <div class="explenations">
+      <h1>HTML5 Canvas testing.</h1>
+      <p>Press Spacebar to pause, ESC to stop.</p>
+    </div>
+    <script>
+      var canvas = document.getElementById('myCanvas');
+      var context = canvas.getContext('2d');
+      var rectWidth = 152;
+      var rectHeight = 76;
+      var framerate_wanted = 15;
+      var key_quit_pressed = false;
+      var key_paused_pressed = false;
+      var app_paused = false;
+
+      const KEY_SPACE     = 32;
+      const KEY_ESC       = 27;
+
+
+      function init() {
+        context.translate(canvas.width / 2, canvas.height / 2);
+        run_interval_id = setInterval(run, 1000 / framerate_wanted);
+      }
+
+      var run_interval_id;
+      var angle_offset;
+      var ts_prev = new Date().getTime();
+
+      function run() {
+        if (key_quit_pressed) {
+          quit_app();
+          return;
+        }
+        var alpha_ts = new Date().getTime() - ts_prev;
+        if (app_paused ==false) {
+          update(alpha_ts);
+          draw(alpha_ts);
+        }
+        ts_prev = new Date().getTime();
+      }
+
+      function keyup(evt)
+      {
+        console.log("keydown(",evt,")");
+        evt.preventDefault();
+        if (evt.keyCode == KEY_SPACE) app_paused = !app_paused;
+        else if (evt.keyCode ==  KEY_ESC) key_quit_pressed = true;
+      }
+
+      function change(evt) {
+        console.log("change(",evt,")");
+      }
+
+      function update(alpha_ts) 
+      {
+      }
+
+      function draw(alpha_ts)
+      {
+        // want to change angle 15° per second
+        angle_offset = alpha_ts / 1000 * 15;
+
+        context.clearRect(rectWidth / -2, rectHeight / -2, rectWidth, rectHeight);
+        context.rotate(Math.PI / 180 * angle_offset);
+        context.fillStyle = 'blue';
+        context.fillRect(rectWidth / -2, rectHeight / -2, rectWidth, rectHeight);
+      }
+
+      function quit_app() {
+        clearInterval(run_interval_id);
+      }
+
+      window.addEventListener("load", init);
+      window.addEventListener("keyup", keyup);
+    </script>
+  </body>
+</html>
